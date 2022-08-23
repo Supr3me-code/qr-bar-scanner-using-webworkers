@@ -1,4 +1,4 @@
-this.onmessage = function (e) {
+onmessage = function (e) {
   let selectedDeviceId;
   const codeReader = new ZXing.BrowserQRCodeReader();
   console.log("ZXing code reader initialized");
@@ -34,11 +34,12 @@ this.onmessage = function (e) {
           selectedDeviceId,
           "video",
           (result, err) => {
+            console.log("Zxing worker called");
             if (result) {
               // properly decoded qr code
               //   console.log("Found QR code!", result);
               //   document.getElementById("result").textContent = result.text;
-              this.postMessage({ rawValue: result });
+              postMessage({ rawValue: result });
             }
 
             if (err) {
