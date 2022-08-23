@@ -6,6 +6,11 @@
   border: 2px red solid;
 }
 
+#canvas {
+  border: 2px blue solid;
+  display: none;
+}
+
 .btn {
   margin: 10px;
 }
