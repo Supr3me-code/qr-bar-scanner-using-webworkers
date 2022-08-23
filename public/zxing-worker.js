@@ -1,7 +1,7 @@
-onmessage = function (e) {
+onmessage = (e) => {
+  console.log("zxing worker called");
   let selectedDeviceId;
   const codeReader = new ZXing.BrowserQRCodeReader();
-  console.log("ZXing code reader initialized");
   codeReader
     .getVideoInputDevices()
     .then((videoInputDevices) => {

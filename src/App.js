@@ -17,7 +17,7 @@ function App() {
         .getUserMedia({ video: true })
         .then((stream) => {
           videoRef.current.srcObject = stream;
-          workerInterval = setInterval(worker, 2000);
+          workerInterval = setInterval(worker, 1000);
         })
         .catch(function (error) {
           console.log("Something went wrong! -> " + error);

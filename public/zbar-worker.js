@@ -1,9 +1,7 @@
-// import { scanImageData } from "zbar.wasm";
-
-onmessage = (event) => {
+onmessage = (e) => {
   message = async () => {
-    const res = await scanImageData(event.data);
-    console.log("zBar worker called " + res[0].decode()); // Hello World);
+    console.log("zBar worker called");
+    const res = await scanImageData(e.data);
     postMessage({ rawValue: res[0].decode() });
   };
 };
