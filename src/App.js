@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import { useRef } from "react";
 import { createCanvas, loadImage } from "canvas";
 import ZbarScanner from "./scanners/zbar-scanner";
+import ZxingScanner from "./scanners/zxing-scanner";
 
 function App() {
   const videoRef = useRef(null);
@@ -62,7 +63,8 @@ function App() {
     //   "https://raw.githubusercontent.com/zbar-wasm/demo/master/node/test.png";
     const img = takeCamInput(); // TODO: sending periodic snapshots from stream
     console.log(img);
-    ZbarScanner(img);
+    // ZbarScanner(img);
+    ZxingScanner();
 
     // w1 = new Worker("zbar-worker.js");
     // w2 = new Worker("zxing-worker.js");
