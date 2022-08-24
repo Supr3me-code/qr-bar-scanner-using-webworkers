@@ -2,6 +2,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { useRef } from "react";
 import { createCanvas, loadImage } from "canvas";
+import ZbarScanner from "./scanners/zbar-scanner";
 
 function App() {
   const videoRef = useRef(null);
@@ -73,13 +74,18 @@ function App() {
     context.drawImage(videoRef.current, 0, 0, width, height);
     const data = canvasRef.current.toDataURL("image/png");
     imgRef.current.setAttribute("src", data);
+    // console.log(data);
     return data;
   }
 
   const worker = async () => {
     console.log("worker main function called");
+    // const url =
+    //   "https://raw.githubusercontent.com/zbar-wasm/demo/master/node/test.png";
     const img = await getImageData(takepicture()); // TODO: sending periodic snapshots from stream
     console.log(img);
+    // ZbarScanner(img);
+
     w1 = new Worker("zbar-worker.js");
     w2 = new Worker("zxing-worker.js");
     w1.postMessage(img);
