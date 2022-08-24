@@ -28,7 +28,9 @@ function App() {
   const stopCam = () => {
     let stream = videoRef.current.srcObject;
     let tracks = stream.getTracks();
-    tracks.forEach((track) => track.stop());
+    tracks.forEach((track) => {
+      track.stop();
+    });
     videoRef.srcObject = null;
     clearInterval(workerInterval);
     workerInterval = null;
@@ -78,20 +80,20 @@ function App() {
     console.log("worker main function called");
     const img = await getImageData(takepicture()); // TODO: sending periodic snapshots from stream
     console.log(img);
-    w1 = new Worker(`${process.env.PUBLIC_URL}/zbar-worker.js`);
-    // w2 = new Worker("zxing-worker.js");
+    w1 = new Worker("zbar-worker.js");
+    w2 = new Worker("zxing-worker.js");
     w1.postMessage(img);
-    // w2.postMessage(img);
-    w1.onmessage = (event) => {
-      console.log("zBar won -> raw value: " + event.data.rawValue);
-      // w2.terminate();
+    w2.postMessage(img);
+    w1.onmessage = ({ data: { rawValue } }) => {
+      console.log("zBar won -> raw value: " + rawValue);
+      w2.terminate();
       stopCam();
     };
-    // w2.onmessage = (event) => {
-    //   console.log("zXing won -> raw value: " + event.data.rawValue);
-    //   w1.terminate();
-    //   stopCam();
-    // };
+    w2.onmessage = ({ data: { rawValue } }) => {
+      console.log("zXing won -> raw value: " + rawValue);
+      w1.terminate();
+      stopCam();
+    };
   };
 
   return (
