@@ -7,7 +7,6 @@ import ZbarScanner from "./scanners/zbar-scanner";
 function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const imgRef = useRef(null);
   let height = 320;
   let width = 320;
   let w1, w2, workerInterval;
@@ -19,6 +18,7 @@ function App() {
         .then((stream) => {
           videoRef.current.srcObject = stream;
           workerInterval = setInterval(worker, 1000);
+          // worker();
         })
         .catch(function (error) {
           console.log("Something went wrong! -> " + error);
@@ -37,69 +37,47 @@ function App() {
     workerInterval = null;
   };
 
-  // const getImageData = (src) => {
-  //   console.log("canvas function called");
-  //   const img = new Image();
-  //   img.addEventListener(
-  //     "load",
-  //     () => {
-  //       const canvas = createCanvas(img.width, img.height);
-  //       const ctx = canvas.getContext("2d");
-  //       ctx.drawImage(img, 0, 0);
-  //       console.log(
-  //         "this is in canvas func -> " +
-  //           ctx.getImageData(0, 0, img.width, img.height)
-  //       );
-  //       return ctx.getImageData(0, 0, img.width, img.height);
-  //     },
-  //     false
-  //   );
-  //   img.src = src;
+  // const getImageData = async (src) => {
+  //   console.log("old canvas function called");
+  //   const img = await loadImage(src);
+  //   const canvas = createCanvas(img.width, img.height);
+  //   const ctx = canvas.getContext("2d");
+  //   ctx.drawImage(img, 0, 0);
+  //   return ctx.getImageData(0, 0, img.width, img.height);
   // };
 
-  const getImageData = async (src) => {
-    console.log("old canvas function called");
-    const img = await loadImage(src);
-    const canvas = createCanvas(img.width, img.height);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    return ctx.getImageData(0, 0, img.width, img.height);
-  };
-
-  function takepicture() {
+  const takeCamInput = () => {
     console.log("take picture function called");
     const context = canvasRef.current.getContext("2d");
     canvasRef.current.width = width;
     canvasRef.current.height = height;
     context.drawImage(videoRef.current, 0, 0, width, height);
-    const data = canvasRef.current.toDataURL("image/png");
-    imgRef.current.setAttribute("src", data);
-    // console.log(data);
-    return data;
-  }
+    const imgData = context.getImageData(0, 0, width, height);
+    return imgData;
+  };
 
   const worker = async () => {
     console.log("worker main function called");
     // const url =
     //   "https://raw.githubusercontent.com/zbar-wasm/demo/master/node/test.png";
-    const img = await getImageData(takepicture()); // TODO: sending periodic snapshots from stream
+    const img = takeCamInput(); // TODO: sending periodic snapshots from stream
     console.log(img);
-    // ZbarScanner(img);
+    ZbarScanner(img);
 
-    w1 = new Worker("zbar-worker.js");
-    w2 = new Worker("zxing-worker.js");
-    w1.postMessage(img);
-    w2.postMessage(img);
-    w1.onmessage = ({ data: { rawValue } }) => {
-      console.log("zBar won -> raw value: " + rawValue);
-      w2.terminate();
-      stopCam();
-    };
-    w2.onmessage = ({ data: { rawValue } }) => {
-      console.log("zXing won -> raw value: " + rawValue);
-      w1.terminate();
-      stopCam();
-    };
+    // w1 = new Worker("zbar-worker.js");
+    // w2 = new Worker("zxing-worker.js");
+    // w1.postMessage(img);
+    // w2.postMessage(img);
+    // w1.onmessage = ({ data: { rawValue } }) => {
+    //   console.log("zBar won -> raw value: " + rawValue);
+    //   w2.terminate();
+    //   stopCam();
+    // };
+    // w2.onmessage = ({ data: { rawValue } }) => {
+    //   console.log("zXing won -> raw value: " + rawValue);
+    //   w1.terminate();
+    //   stopCam();
+    // };
   };
 
   return (
@@ -109,11 +87,6 @@ function App() {
         <div className="video-card">
           <video ref={videoRef} id="video" autoPlay></video>
           <canvas ref={canvasRef} id="canvas"></canvas>
-          <img
-            ref={imgRef}
-            id="photo"
-            alt="The screen capture will appear in this box."
-          ></img>
         </div>
         <button className="btn btn-primary" onClick={startCam}>
           Start Camera
