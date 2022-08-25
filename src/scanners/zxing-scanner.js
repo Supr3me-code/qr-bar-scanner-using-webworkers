@@ -6,7 +6,7 @@ import {
   FormatException,
 } from "@zxing/library";
 
-const ZxingScanner = () => {
+const ZxingScanner = async () => {
   console.log("Inside ZXing scanner");
   // const [selectedDeviceId, setSelectedDeviceId] = useState("");
   // const [code, setCode] = useState("");
@@ -29,15 +29,15 @@ const ZxingScanner = () => {
   //     });
   // }, []);
 
-  codeReader.decodeFromInputVideoDeviceContinuously(
+  await codeReader.decodeFromInputVideoDeviceContinuously(
     selectedDeviceId,
     "video",
     (result, err) => {
       if (result) {
-        // properly decoded qr code
         console.log("Found QR code!", result);
         // setCode(result.text);
         console.log(result.text);
+        return result.text;
       }
 
       if (err) {

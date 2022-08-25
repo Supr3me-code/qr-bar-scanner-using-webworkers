@@ -1,13 +1,14 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { createCanvas, loadImage } from "canvas";
-import ZbarScanner from "./scanners/zbar-scanner";
 import ZxingScanner from "./scanners/zxing-scanner";
+import ZbarScanner from "./scanners/zbar-scanner";
 
 function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [result, setResult] = useState("");
   let height = 320;
   let width = 320;
   let w1, w2, workerInterval;
@@ -59,25 +60,34 @@ function App() {
 
   const worker = async () => {
     console.log("worker main function called");
-    // const url =
-    //   "https://raw.githubusercontent.com/zbar-wasm/demo/master/node/test.png";
-    const img = takeCamInput(); // TODO: sending periodic snapshots from stream
-    console.log(img);
-    // ZbarScanner(img);
-    ZxingScanner();
+    const img = takeCamInput();
+    // ZxingScanner();
+    // const res = ZbarScanner();
+    // console.log(res);
 
-    // w1 = new Worker("zbar-worker.js");
+    // w1 = new Worker("zbar-worker.js", { type: "module" });
+    w1 = new Worker(new URL("./workers/zbar-worker.js", import.meta.url), {
+      type: "module",
+    });
+
     // w2 = new Worker("zxing-worker.js");
-    // w1.postMessage(img);
+    // w2 = new Worker(new URL("./workers/zxing-worker.js", import.meta.url), {
+    //   type: "module",
+    // });
+
+    w1.postMessage(img);
     // w2.postMessage(img);
-    // w1.onmessage = ({ data: { rawValue } }) => {
-    //   console.log("zBar won -> raw value: " + rawValue);
-    //   w2.terminate();
-    //   stopCam();
-    // };
-    // w2.onmessage = ({ data: { rawValue } }) => {
-    //   console.log("zXing won -> raw value: " + rawValue);
-    //   w1.terminate();
+
+    w1.onmessage = (event) => {
+      console.log("zBar won -> raw value: " + event.data);
+      setResult(event.data);
+      // w2.terminate();
+      stopCam();
+    };
+    // w2.onmessage = (event) => {
+    //   console.log("zXing won -> raw value: " + event.data);
+    //   setResult(event.data);
+    //   // w1.terminate();
     //   stopCam();
     // };
   };
@@ -96,6 +106,7 @@ function App() {
         <button className="btn btn-danger" onClick={stopCam}>
           Stop Camera
         </button>
+        <div className="result">{result}</div>
       </main>
     </div>
   );

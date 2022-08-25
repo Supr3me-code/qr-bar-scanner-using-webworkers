@@ -3,6 +3,14 @@
   background-color: grey;
 }
 
+.result {
+  min-height: 3rem;
+  color: white;
+  font-size: 2rem;
+  text-shadow: 0 0 0.4rem #ff0101, 0 0 1rem #f6f6f6;
+  font-weight: 700;
+}
+
 #video {
   border: 2px red solid;
 }
