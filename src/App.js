@@ -25,7 +25,7 @@ function App() {
         })
         .then((stream) => {
           videoRef.current.srcObject = stream;
-          workerInterval = setInterval(worker, 1000);
+          workerInterval = setInterval(worker, 500);
           // worker();
         })
         .catch(function (error) {
@@ -67,7 +67,7 @@ function App() {
   const worker = async () => {
     console.log("worker main function called");
     const img = takeCamInput();
-    console.log(img);
+    // console.log(img);
     // ZxingScanner();
     // const res = ZbarScanner();
     // console.log(res);
@@ -78,28 +78,28 @@ function App() {
         type: "module",
       }
     );
-    // const w2 = new Worker(
-    //   new URL("./workers/zxing-worker.js", import.meta.url),
-    //   {
-    //     type: "module",
-    //   }
-    // );
+    const w2 = new Worker(
+      new URL("./workers/jsqr-worker.js", import.meta.url),
+      {
+        type: "module",
+      }
+    );
 
     w1.postMessage(img);
-    // w2.postMessage(img);
+    w2.postMessage(img);
 
     w1.onmessage = (event) => {
       console.log("zBar won -> raw value: " + event.data);
       setResult(event.data);
-      // w2.terminate();
+      w2.terminate();
       stopCam();
     };
-    // w2.onmessage = (event) => {
-    //   console.log("zXing won -> raw value: " + event.data);
-    //   setResult(event.data);
-    //   // w1.terminate();
-    //   stopCam();
-    // };
+    w2.onmessage = (event) => {
+      console.log("jsQr won -> raw value: " + event.data);
+      setResult(event.data);
+      w1.terminate();
+      stopCam();
+    };
   };
 
   return (
