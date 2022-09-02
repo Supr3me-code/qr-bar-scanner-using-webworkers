@@ -34,10 +34,8 @@ const ZxingScanner = async () => {
     "video",
     (result, err) => {
       if (result) {
-        console.log("Found QR code!", result);
         // setCode(result.text);
-        console.log(result.text);
-        return result.text;
+        console.log("zxing won! rawValue: -> " + result.text);
       }
 
       if (err) {

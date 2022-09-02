@@ -11,12 +11,18 @@ function App() {
   const [result, setResult] = useState("");
   let height = 320;
   let width = 320;
-  let w1, w2, workerInterval;
+  let workerInterval;
 
   const startCam = () => {
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
-        .getUserMedia({ video: true })
+        .getUserMedia({
+          video:
+            // true
+            {
+              facingMode: "environment",
+            },
+        })
         .then((stream) => {
           videoRef.current.srcObject = stream;
           workerInterval = setInterval(worker, 1000);
@@ -61,19 +67,23 @@ function App() {
   const worker = async () => {
     console.log("worker main function called");
     const img = takeCamInput();
+    console.log(img);
     // ZxingScanner();
     // const res = ZbarScanner();
     // console.log(res);
 
-    // w1 = new Worker("zbar-worker.js", { type: "module" });
-    w1 = new Worker(new URL("./workers/zbar-worker.js", import.meta.url), {
-      type: "module",
-    });
-
-    // w2 = new Worker("zxing-worker.js");
-    // w2 = new Worker(new URL("./workers/zxing-worker.js", import.meta.url), {
-    //   type: "module",
-    // });
+    const w1 = new Worker(
+      new URL("./workers/zbar-worker.js", import.meta.url),
+      {
+        type: "module",
+      }
+    );
+    // const w2 = new Worker(
+    //   new URL("./workers/zxing-worker.js", import.meta.url),
+    //   {
+    //     type: "module",
+    //   }
+    // );
 
     w1.postMessage(img);
     // w2.postMessage(img);
