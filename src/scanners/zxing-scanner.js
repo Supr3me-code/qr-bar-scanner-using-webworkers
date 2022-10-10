@@ -8,8 +8,6 @@ import {
 
 const ZxingScanner = async () => {
   console.log("Inside ZXing scanner");
-  // const [selectedDeviceId, setSelectedDeviceId] = useState("");
-  // const [code, setCode] = useState("");
   let selectedDeviceId;
   let code;
 
@@ -17,24 +15,12 @@ const ZxingScanner = async () => {
   codeReader.getVideoInputDevices().then((VideoInputDevices) => {
     selectedDeviceId = VideoInputDevices[0].deviceId;
   });
-  // useEffect(() => {
-  //   codeReader
-  //     .getVideoInputDevices()
-  //     .then((videoInputDevices) => {
-  //       setSelectedDeviceId(videoInputDevices[0].deviceId);
-  //       decodeContinuously(selectedDeviceId);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }, []);
 
   await codeReader.decodeFromInputVideoDeviceContinuously(
     selectedDeviceId,
     "video",
     (result, err) => {
       if (result) {
-        // setCode(result.text);
         console.log("zxing won! rawValue: -> " + result.text);
       }
 
