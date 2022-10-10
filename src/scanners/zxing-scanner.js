@@ -9,21 +9,24 @@ import {
 const ZxingScanner = async () => {
   console.log("Inside ZXing scanner");
   let selectedDeviceId;
-  let code;
+  let code; //stores result
 
   const codeReader = new BrowserQRCodeReader();
   codeReader.getVideoInputDevices().then((VideoInputDevices) => {
     selectedDeviceId = VideoInputDevices[0].deviceId;
   });
-
+  
+  //calling the reader function
   await codeReader.decodeFromInputVideoDeviceContinuously(
     selectedDeviceId,
     "video",
     (result, err) => {
       if (result) {
+        //to determine success ratio
         console.log("zxing won! rawValue: -> " + result.text);
       }
 
+      //error handling
       if (err) {
         code = "";
         if (err instanceof NotFoundException) {
