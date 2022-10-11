@@ -13,6 +13,7 @@ function App() {
   let width = 320;
   let workerInterval;
 
+  //function to start the web cam feed
   const startCam = () => {
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
@@ -34,6 +35,7 @@ function App() {
     }
   };
 
+   //function to stop the webcam feed
   const stopCam = () => {
     let stream = videoRef.current.srcObject;
     let tracks = stream.getTracks();
@@ -45,15 +47,7 @@ function App() {
     workerInterval = null;
   };
 
-  // const getImageData = async (src) => {
-  //   console.log("old canvas function called");
-  //   const img = await loadImage(src);
-  //   const canvas = createCanvas(img.width, img.height);
-  //   const ctx = canvas.getContext("2d");
-  //   ctx.drawImage(img, 0, 0);
-  //   return ctx.getImageData(0, 0, img.width, img.height);
-  // };
-
+  //function to take screenshots at regular intervals from the webcam feed
   const takeCamInput = () => {
     console.log("take picture function called");
     const context = canvasRef.current.getContext("2d");
@@ -64,13 +58,10 @@ function App() {
     return imgData;
   };
 
+  //function to create workers
   const worker = async () => {
     console.log("worker main function called");
     const img = takeCamInput();
-    // console.log(img);
-    // ZxingScanner();
-    // const res = ZbarScanner();
-    // console.log(res);
 
     const w1 = new Worker(
       new URL("./workers/zbar-worker.js", import.meta.url),
